@@ -1,5 +1,4 @@
-from accounts.serializers import SignUpSerializer
-from django.shortcuts import render
+from accounts.serializers import SignUpSerializer, LogInSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -22,3 +21,17 @@ def sign_up(request):
             'success':False,
             'message':serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def log_in(request):
+    if request.method == 'POST':
+        serializer = LogInSerializer(data=request.data)
+
+        if serializer.is_valid(raise_exception=True):
+            tokens = serializer.generate_tokens(serializer.validated_data)
+
+            return Response({
+                'success':True,
+                'message':tokens
+            }, status=status.HTTP_200_OK)
