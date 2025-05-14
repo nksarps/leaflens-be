@@ -21,3 +21,19 @@ def send_confirmation_mail(email:str, first_name:str, link:str):
             },
         }
     )
+
+
+def send_password_reset_mail(email:str, first_name:str, link:str):
+    client.send_message(
+        message={
+            "to": {
+            "email": email,
+            },
+            "template": os.getenv('PWD_RESET_MAIL_TEMPLATE_ID'),
+            "data": {
+            "appName": "LeafLens",
+            "firstName": first_name,
+            "link": link,
+            },
+        }
+    )
