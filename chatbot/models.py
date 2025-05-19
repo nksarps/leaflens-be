@@ -14,4 +14,4 @@ class Chat(models.Model):
         return f'{self.sender} ({self.session_id}): {self.message[:50]}'
 
     class Meta:
-        ordering = ('timestamp',)
+        ordering = ('-timestamp',)
