@@ -2,7 +2,6 @@ import os, uuid
 import google.generativeai as genai
 from accounts.permissions import IsVerified
 from chatbot.models import Chat
-from django.shortcuts import render
 from dotenv import load_dotenv
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
