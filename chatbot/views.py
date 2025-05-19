@@ -2,6 +2,7 @@ import os, uuid
 import google.generativeai as genai
 from accounts.permissions import IsVerified
 from chatbot.models import Chat
+from chatbot.serializers import SessionSerializer
 from dotenv import load_dotenv
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -18,9 +19,9 @@ def start_chat(request):
     if request.method == 'POST':
         user = request.user
 
-        user_msg = request.data.get('message')
+        user_message = request.data.get('message')
 
-        if not user_msg:
+        if not user_message:
             return Response({
                 'success':False,
                 'message':'Message is required to start chat'
@@ -31,27 +32,27 @@ def start_chat(request):
         try:
             chat = model.start_chat()
 
-            response = chat.send_message(user_msg)
-            bot_resp = response.text
+            response = chat.send_message(user_message)
+            bot_response = response.text
 
             Chat.objects.create(
                 user=user,
                 session_id=session_id,
                 sender='user',
-                message=user_msg
+                message=user_message
             )
 
             Chat.objects.create(
                 user=user,
                 session_id=session_id,
                 sender='model',
-                message=bot_resp
+                message=bot_response
             )
 
             return Response({
                 'success':True,
                 'session_id':session_id,
-                'response':bot_resp
+                'response':bot_response
             }, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error processing chat: {e}")
@@ -73,9 +74,9 @@ def continue_chat(request, session_id:str):
                 'message':'Session ID not found. Start a new chat.'
             }, status=status.HTTP_404_NOT_FOUND)
 
-        user_msg = request.data.get('message')
+        user_message = request.data.get('message')
 
-        if not user_msg:
+        if not user_message:
             return Response({
                 'success':False,
                 'message':'Message is required'
@@ -91,27 +92,27 @@ def continue_chat(request, session_id:str):
 
             chat = model.start_chat(history=history_for_gemini)
 
-            response = chat.send_message(user_msg)
-            bot_resp = response.text
+            response = chat.send_message(user_message)
+            bot_response = response.text
 
             Chat.objects.create(
                 user=user,
                 session_id=session_id,
                 sender='user',
-                message=user_msg
+                message=user_message
             )
 
             Chat.objects.create(
                 user=user,
                 session_id=session_id,
                 sender='model',
-                message=bot_resp
+                message=bot_response
             )
 
             return Response({
                 'success':True,
                 'session_id':session_id,
-                'response':bot_resp
+                'response':bot_response
             }, status=status.HTTP_200_OK)
         
         except Exception as e:
@@ -122,3 +123,42 @@ def continue_chat(request, session_id:str):
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         
+@api_view(['GET'])
+@permission_classes([IsVerified])
+def get_user_chat_history(request):
+    user = request.user
+
+    user_messages = Chat.objects.filter(user=user).order_by('session_id', 'timestamp')
+
+    grouped_messages = {}
+    session_latest_timestamps = {}
+
+    for message in user_messages:
+        if message.session_id not in grouped_messages:
+            grouped_messages[message.session_id] = []
+        
+        grouped_messages[message.session_id].append(message)
+        
+        session_latest_timestamps[message.session_id] = message.timestamp
+
+    sorted_session_ids = sorted(
+        session_latest_timestamps.items(), 
+        key=lambda item: item[1], 
+        reverse=True 
+    )
+
+    serialized_data = []
+    for session_id, _ in sorted_session_ids:
+        messages_list = grouped_messages[session_id]
+
+        serialized_data.append({
+            'session_id': session_id,
+            'messages': messages_list
+        })
+    
+    serializer = SessionSerializer(serialized_data, many=True)
+
+    return Response({
+        'success': True,
+        'messages': serializer.data
+    }, status=status.HTTP_200_OK)
