@@ -1,0 +1,9 @@
+# TODO list for LeafLens
+
+[x] Set up Django project
+[x] Configure environment variables
+[x] User authentication
+[x] Implementing chatbot
+[x] User profile
+[x] Updating user profile info
+[ ] Updating User Info
