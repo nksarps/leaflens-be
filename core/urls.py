@@ -24,4 +24,5 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path('chat/', include('chatbot.urls')),
     path('profiles/', include('profiles.urls')),
+    path('predict/', include('predict.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
