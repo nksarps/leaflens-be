@@ -6,4 +6,6 @@
 [x] Implementing chatbot
 [x] User profile
 [x] Updating user profile info
+[x] Predicting diseases using model
 [ ] Updating User Info
+[ ] Add model link
