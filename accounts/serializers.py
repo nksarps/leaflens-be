@@ -67,4 +67,4 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'first_name', 'middle_name', 'last_name', 'email', 'username']
 
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'email']
