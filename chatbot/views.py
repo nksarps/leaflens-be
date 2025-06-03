@@ -11,7 +11,7 @@ from rest_framework.response import Response
 load_dotenv()
 
 genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 @api_view(['POST'])
 @permission_classes([IsVerified])
