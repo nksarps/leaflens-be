@@ -53,5 +53,5 @@ def update_profile_info(request):
         
         return Response({
             'success':False,
-            'message':serializer.data
+            'message':serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
