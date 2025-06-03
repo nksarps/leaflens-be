@@ -4,6 +4,8 @@ import tensorflow as tf
 from accounts.permissions import IsVerified
 from django.conf import settings
 from PIL import Image
+from predict.models import DiseasePrediction
+from predict.serializers import DiseasePredictionSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -44,6 +46,12 @@ def predict_disease(request):
 
             confidence = float(np.max(prediction))
 
+            DiseasePrediction.objects.create(
+                user=request.user,
+                image=file,
+                prediction=CLASS_NAMES[str(predicted_class_index)]
+            )
+
             return Response({
                 'success':True,
                 'prediction':CLASS_NAMES[str(predicted_class_index)],
@@ -55,3 +63,19 @@ def predict_disease(request):
                 'success':False,
                 'message':str(e)
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsVerified])
+def get_all_predictions(request):
+    if request.method == 'GET':
+        user = request.user
+
+        predictions = DiseasePrediction.objects.filter(user=user)
+
+        serializer = DiseasePredictionSerializer(predictions, many=True)
+
+        return Response({
+            'success':True,
+            'predictions':serializer.data
+        }, status=status.HTTP_200_OK)
