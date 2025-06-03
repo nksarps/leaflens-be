@@ -7,5 +7,7 @@
 [x] User profile
 [x] Updating user profile info
 [x] Predicting diseases using model
-[ ] Updating User Info
+[x] Updating User Info
 [ ] Add model link
+[ ] Add confidence to prediction model
+[ ] Add view to delete predictions
