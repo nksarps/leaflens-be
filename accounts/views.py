@@ -1,6 +1,7 @@
 import os, jwt
 from accounts.models import User
-from accounts.serializers import SignUpSerializer, LogInSerializer
+from accounts.permissions import IsVerified
+from accounts.serializers import SignUpSerializer, LogInSerializer, UserSerializer
 from accounts.utils import send_confirmation_mail, send_password_reset_mail
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -9,7 +10,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from dotenv import load_dotenv
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -112,6 +113,7 @@ def log_in(request):
         
 
 @api_view(['POST'])
+@permission_classes([IsVerified])
 def password_reset(request):
     if request.method == 'POST':
         email = request.data.get('email')
@@ -198,3 +200,26 @@ def password_reset_confirm(request):
                     'message':str(e)
                 }, status=status.HTTP_400_BAD_REQUEST
             )
+        
+
+@api_view(['PUT', 'PATCH'])
+@permission_classes([IsVerified])
+def update_user_info(request):
+    if request.method == 'PUT' or request.method == 'PATCH':
+        user = request.user
+
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response({
+                'success':True,
+                'message':'User information successfully updated',
+                'user':serializer.data
+            }, status=status.HTTP_200_OK)
+        
+        return Response({
+            'success':False,
+            'message':serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
+        
