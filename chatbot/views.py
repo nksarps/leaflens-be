@@ -63,7 +63,7 @@ def start_chat(request):
     
 
 @api_view(['POST'])
-@permission_classes([IsVerified]) # Change to IsVerified
+@permission_classes([IsVerified])
 def continue_chat(request, session_id:str):
     if request.method == 'POST':
         user = request.user
@@ -162,3 +162,24 @@ def get_user_chat_history(request):
         'success': True,
         'messages': serializer.data
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsVerified])
+def delete_chat_session(request, session_id: str):
+    user = request.user
+
+    chats = Chat.objects.filter(session_id=session_id, user=user)
+    
+    if not chats.exists():
+        return Response({
+            'success': False,
+            'message': 'Session does not exist'
+        }, status=status.HTTP_404_NOT_FOUND)
+    
+    count, _ = chats.delete()
+
+    return Response({
+        'success': True,
+        'message': f'{count} chat(s) successfully deleted'
+    }, status=status.HTTP_204_NO_CONTENT)
