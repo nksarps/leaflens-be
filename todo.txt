@@ -12,3 +12,5 @@
 [ ] Add pagination
 [ ] Add confidence to prediction model
 [ ] Add view to delete predictions
+[ ] Add postgres DB
+
