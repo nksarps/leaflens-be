@@ -9,5 +9,6 @@
 [x] Predicting diseases using model
 [x] Updating User Info
 [x] Add view to delete predictions
-[ ] Add postgres DB
+[x] Add documentation
+[ ] Add postgres DB (Supabase)
 [ ] Add pagination
