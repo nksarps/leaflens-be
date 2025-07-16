@@ -46,7 +46,7 @@ def predict_disease(request):
 
             confidence = float(np.max(prediction))
 
-            DiseasePrediction.objects.create(
+            entry = DiseasePrediction.objects.create(
                 user=request.user,
                 image=file,
                 prediction=CLASS_NAMES[str(predicted_class_index)]
@@ -54,6 +54,7 @@ def predict_disease(request):
 
             return Response({
                 'success':True,
+                'id':entry.id,
                 'prediction':CLASS_NAMES[str(predicted_class_index)],
                 'confidence':confidence
             })
@@ -79,3 +80,47 @@ def get_all_predictions(request):
             'success':True,
             'predictions':serializer.data
         }, status=status.HTTP_200_OK)
+    
+
+@api_view(['GET'])
+@permission_classes([IsVerified])
+def get_prediction(request, id:str):
+    if request.method == 'GET':
+        user = request.user
+
+        try:
+            prediction = DiseasePrediction.objects.get(id=id, user=user)
+        except DiseasePrediction.DoesNotExist:
+            return Response({
+                'success':False,
+                'message':'Prediction not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DiseasePredictionSerializer(prediction)
+
+        return Response({
+            'success':True,
+            'message':serializer.data
+        }, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsVerified])
+def delete_prediction(request, id:str):
+    if request.method == 'DELETE':
+        user = request.user
+
+        try:
+            prediction = DiseasePrediction.objects.get(id=id, user=user)
+        except DiseasePrediction.DoesNotExist:
+            return Response({
+                'success':False,
+                'message':'Prediction not found'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        prediction.delete()
+
+        return Response({
+            'success':True,
+            'message':'Prediction deleted successfully!'
+        }, status=status.HTTP_204_NO_CONTENT)
