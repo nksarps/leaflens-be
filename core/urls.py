@@ -18,6 +18,22 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="LeafLens API",
+        default_version='v1.0.0',
+        description="This is the documentation for the backend API for LeafLens, a final year project focused on detecting diseases in plant leaves using image analysis and machine learning. Built with Django Rest Framework (DRF), the API handles image uploads, disease prediction requests, and serves as the central service layer for the LeafLens mobile application.",
+        contact=openapi.Contact(email="nksarps@gmail.com"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +41,9 @@ urlpatterns = [
     path('chat/', include('chatbot.urls')),
     path('profiles/', include('profiles.urls')),
     path('predict/', include('predict.urls')),
+
+    # Documentation URLs
+    path('api/schema/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
