@@ -3,7 +3,7 @@ from predict.models import DiseasePrediction
 
 
 class DiseasePredictionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'prediction', 'timestamp')
+    list_display = ('id', 'user', 'prediction', 'timestamp')
     readonly_fields = ('timestamp',)
 
 
