@@ -8,9 +8,6 @@
 [x] Updating user profile info
 [x] Predicting diseases using model
 [x] Updating User Info
-[ ] Add model link
-[ ] Add pagination
-[ ] Add confidence to prediction model
-[ ] Add view to delete predictions
+[x] Add view to delete predictions
 [ ] Add postgres DB
-
+[ ] Add pagination
