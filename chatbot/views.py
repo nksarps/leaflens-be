@@ -182,4 +182,4 @@ def delete_chat_session(request, session_id: str):
     return Response({
         'success': True,
         'message': f'{count} chat(s) successfully deleted'
-    }, status=status.HTTP_204_NO_CONTENT)
+    }, status=status.HTTP_200_OK)
