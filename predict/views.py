@@ -123,4 +123,4 @@ def delete_prediction(request, id:str):
         return Response({
             'success':True,
             'message':'Prediction deleted successfully!'
-        }, status=status.HTTP_204_NO_CONTENT)
+        }, status=status.HTTP_200_OK)
