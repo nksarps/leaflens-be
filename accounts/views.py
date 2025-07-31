@@ -11,6 +11,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from dotenv import load_dotenv
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -223,3 +224,14 @@ def update_user_info(request):
             'message':serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
         
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_current_user(request):
+    if request.method == 'GET':
+        serializer = UserSerializer(request.user)
+
+        return Response({
+            'success':True,
+            'user':serializer.data
+        }, status=status.HTTP_200_OK)
