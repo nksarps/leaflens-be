@@ -153,6 +153,20 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
-# CORSHEADERS SETTINGS
-# Allow CORS requests from any origin
+# CORSHEADERS SETTINGS - Enhanced for mobile apps
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+# Additional CORS settings for mobile compatibility
+CORS_ALLOW_ALL_HEADERS = True
+CORS_ALLOW_ALL_METHODS = True
+
+# Expose headers that mobile apps might need
+CORS_EXPOSE_HEADERS = [
+    'Content-Type',
+    'Authorization',
+    'X-CSRFToken',
+]
+
+# Preflight cache duration
+CORS_PREFLIGHT_MAX_AGE = 86400
