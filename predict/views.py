@@ -49,7 +49,8 @@ def predict_disease(request):
             entry = DiseasePrediction.objects.create(
                 user=request.user,
                 image=file,
-                prediction=CLASS_NAMES[str(predicted_class_index)]
+                prediction=CLASS_NAMES[str(predicted_class_index)],
+                confidence=confidence
             )
 
             return Response({
