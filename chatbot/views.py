@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from chatbot.serializers import ChatSerializer
 
 load_dotenv()
 
@@ -160,6 +161,33 @@ def get_user_chat_history(request):
 
     return Response({
         'success': True,
+        'messages': serializer.data
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsVerified])
+def get_chat_session(request, session_id: str):
+    user = request.user
+
+    # Check if the session exists and belongs to the user
+    if not Chat.objects.filter(session_id=session_id, user=user).exists():
+        return Response({
+            'success': False,
+            'message': 'Session not found or access denied'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    # Get all messages for the session, ordered by timestamp
+    messages = Chat.objects.filter(
+        session_id=session_id, 
+        user=user
+    ).order_by('timestamp')
+
+    serializer = ChatSerializer(messages, many=True)
+
+    return Response({
+        'success': True,
+        'session_id': session_id,
         'messages': serializer.data
     }, status=status.HTTP_200_OK)
 
