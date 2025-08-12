@@ -1,6 +1,5 @@
 import os, jwt
 from accounts.models import User
-from accounts.permissions import IsVerified
 from accounts.serializers import SignUpSerializer, LogInSerializer, UserSerializer
 from accounts.utils import send_confirmation_mail, send_password_reset_mail
 from django.contrib.auth.tokens import default_token_generator
@@ -105,7 +104,7 @@ def log_in(request):
         
 
 @api_view(['POST'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def password_reset(request):
     if request.method == 'POST':
         email = request.data.get('email')
@@ -195,7 +194,7 @@ def password_reset_confirm(request):
         
 
 @api_view(['PUT', 'PATCH'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def update_user_info(request):
     if request.method == 'PUT' or request.method == 'PATCH':
         user = request.user

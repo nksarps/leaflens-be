@@ -1,11 +1,11 @@
 import os, uuid
 import google.generativeai as genai
-from accounts.permissions import IsVerified
 from chatbot.models import Chat
 from chatbot.serializers import SessionSerializer
 from dotenv import load_dotenv
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from chatbot.serializers import ChatSerializer
 
@@ -15,7 +15,7 @@ genai.configure(api_key=os.getenv('GOOGLE_API_KEY'))
 model = genai.GenerativeModel('gemini-2.0-flash')
 
 @api_view(['POST'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def start_chat(request):
     if request.method == 'POST':
         user = request.user
@@ -64,7 +64,7 @@ def start_chat(request):
     
 
 @api_view(['POST'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def continue_chat(request, session_id:str):
     if request.method == 'POST':
         user = request.user
@@ -125,7 +125,7 @@ def continue_chat(request, session_id:str):
 
         
 @api_view(['GET'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def get_user_chat_history(request):
     user = request.user
 
@@ -166,7 +166,7 @@ def get_user_chat_history(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def get_chat_session(request, session_id: str):
     user = request.user
 
@@ -193,7 +193,7 @@ def get_chat_session(request, session_id: str):
 
 
 @api_view(['DELETE'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def delete_chat_session(request, session_id: str):
     user = request.user
 

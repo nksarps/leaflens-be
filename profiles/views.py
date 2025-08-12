@@ -1,13 +1,13 @@
-from accounts.permissions import IsVerified
 from profiles.models import Profile
 from profiles.serializers import ProfileSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
 @api_view(['GET'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def view_profile(request):
     if request.method == 'GET':
         user = request.user
@@ -28,7 +28,7 @@ def view_profile(request):
     
 
 @api_view(['PUT', 'PATCH'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def update_profile_info(request):
     if request.method == 'PUT' or request.method == 'PATCH':
         user = request.user
