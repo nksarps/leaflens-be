@@ -1,13 +1,13 @@
 import os, json
 import numpy as np
 import tensorflow as tf
-from accounts.permissions import IsVerified
 from django.conf import settings
 from PIL import Image
 from predict.models import DiseasePrediction
 from predict.serializers import DiseasePredictionSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
@@ -24,7 +24,7 @@ model = tf.keras.models.load_model(MODEL_PATH)
 
 
 @api_view(['POST'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def predict_disease(request):
     if request.method == 'POST':
         file = request.FILES.get('image')
@@ -68,7 +68,7 @@ def predict_disease(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def get_all_predictions(request):
     if request.method == 'GET':
         user = request.user
@@ -84,7 +84,7 @@ def get_all_predictions(request):
     
 
 @api_view(['GET'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def get_prediction(request, id:str):
     if request.method == 'GET':
         user = request.user
@@ -106,7 +106,7 @@ def get_prediction(request, id:str):
 
 
 @api_view(['DELETE'])
-@permission_classes([IsVerified])
+@permission_classes([IsAuthenticated])
 def delete_prediction(request, id:str):
     if request.method == 'DELETE':
         user = request.user
